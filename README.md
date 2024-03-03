@@ -3,7 +3,18 @@ IESO demand data retrieval and display on website using SCS framework
 
 
 ### 下载project
-git clone https://github.com/niconicolii/gs-spring-cloud-stream.git
+```git clone https://github.com/niconicolii/gs-spring-cloud-stream.git```
+
+### 更新project
+##### local没有更改
+`git pull`
+
+##### 当本地有需要上传的更改
+1. 保存更改
+   - 用 `git add <文件名>` 添加本地有更改的文件，如果有多个有更改的可以`git add`多次，也可以用`git add . `上传所有更改
+   - 用`git commit -m "<message>"` 给这次更改内容加一个description
+2. 为了确保本地project同步repository最新进展，用`git pull`下载最新内容
+3. 用`git push` 完成上传本地内容
 
 
 ### How to Run
