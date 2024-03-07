@@ -1,12 +1,8 @@
 package com.example.stream.nameprocessor;
 
 import java.time.LocalDateTime;
+import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
 import java.util.function.Function;
 
 import org.springframework.amqp.core.Message;
@@ -33,23 +29,24 @@ public class NameProcessorConfiguration {
 	@Bean
 	public Function<String, Map<LocalDateTime, String>> processXmlData() {
 		return xmlString -> {
-			Map<LocalDateTime, String> timeToString = new HashMap<>();
+			// 储存本次收到的xml里的所有<Timestamp，demand>；用LinkedHashMap可以保留数据原本的排序
+			Map<LocalDateTime, String> timeToString = new LinkedHashMap<>();
 //			System.out.println(xmlString);
 			try {
-				// Parse the XML String
+				// Parse XML String using JAVA DOM
 				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder builder = null;
-
 				builder = factory.newDocumentBuilder();
 
+				// parse得出以DOM tree结构代表的XML数据；
+				// 常用methods：.getDocumentElement() 取DOM的child node；
+				// 			   .getElementsByTagName("<tagName>") 用xml的标签名找list of values
+				//					-> return type = NodeList, 用.time(int)选择，再用.getTextContent()取value
 				Document document = builder.parse(new InputSource(new StringReader(xmlString)));
-
-				// Normalize the XML Structure; It's just too important !!
+				// Normalize the XML Structure; 格式化DOM tree -> search的时候更可预测+易于编程
 				document.getDocumentElement().normalize();
-
-				// Here comes the root node
+				// 格式化后重新取xml tree的root；常用的properties/method: root.getNodeName()
 				Element root = document.getDocumentElement();
-//				System.out.println(root.getNodeName());
 
 				// Get StartDate
 				String startDate = document.getElementsByTagName("StartDate").item(0).getTextContent();
