@@ -8,9 +8,9 @@ spring:
           nameSink-in-0: sinkinput
   data:
     mongodb:
-#      authentication-database: admin
-      username: nico
-      password: 123456
-      database: ttt
+      authentication-database: admin
+      username: rootuser
+      password: rootpass
+      database: demandData
       port: 27017
       host: localhost
