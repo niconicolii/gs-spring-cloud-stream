@@ -6,3 +6,11 @@ spring:
       function:
         bindings:
           nameSink-in-0: sinkinput
+  data:
+    mongodb:
+#      authentication-database: admin
+      username: nico
+      password: 123456
+      database: ttt
+      port: 27017
+      host: 10.0.0.131

@@ -5,7 +5,8 @@ import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.function.Function;
 
-import org.springframework.amqp.core.Message;
+import org.springframework.messaging.Message;
+import org.springframework.integration.support.MessageBuilder;
 import org.springframework.cglib.core.Local;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,10 +28,11 @@ import static com.fasterxml.jackson.databind.type.LogicalType.Map;
 public class NameProcessorConfiguration {
 
 	@Bean
-	public Function<String, Map<LocalDateTime, String>> processXmlData() {
+	public Function<String, List<Message<Map<LocalDateTime, Double>>>> processXmlData() {
 		return xmlString -> {
 			// 储存本次收到的xml里的所有<Timestamp，demand>；用LinkedHashMap可以保留数据原本的排序
-			Map<LocalDateTime, String> timeToString = new LinkedHashMap<>();
+			List<Message<Map<LocalDateTime, Double>>> messages = new ArrayList<>();
+//			Map<LocalDateTime, String> timeToString = new LinkedHashMap<>();
 //			System.out.println(xmlString);
 			try {
 				// Parse XML String using JAVA DOM
@@ -71,10 +73,14 @@ public class NameProcessorConfiguration {
 									Element dataElement = (Element) dataNode;
 									// 取得Data里面的数据，每个数据间隔5分钟，需要计算出来时间
 									String demandValue = dataElement.getElementsByTagName("Value").item(0).getTextContent();
+									Double value = Double.valueOf(demandValue);
 									LocalDateTime demandTimestamp = startDateTime.plusMinutes(5*count);
-//									System.out.println("Timestamp : " + demandTimestamp +
-//											", Value : " + demandValue);
-									timeToString.put(demandTimestamp, demandValue);
+									// 代表一组 timestamp - value 的map
+									Map<LocalDateTime, Double> currData = new HashMap<>();
+									currData.put(demandTimestamp, value);
+									// 把map封装到 message里
+									Message<Map<LocalDateTime, Double>> message = MessageBuilder.withPayload(currData).build();
+									messages.add(message);
 								}
 							}
 						}
@@ -83,7 +89,7 @@ public class NameProcessorConfiguration {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			return timeToString;
+			return messages;
 		};
 	}
 }
