@@ -73,8 +73,11 @@ public class NameProcessorConfiguration {
 									Element dataElement = (Element) dataNode;
 									// 取得Data里面的数据，每个数据间隔5分钟，需要计算出来时间
 									String demandValue = dataElement.getElementsByTagName("Value").item(0).getTextContent();
+									// Value element没有数据的话说明这个Data element开始都是placeholder了，可以结束读取了
+									if (demandValue.isEmpty()) break;
+
 									Double value = Double.valueOf(demandValue);
-									LocalDateTime demandTimestamp = startDateTime.plusMinutes(5*count);
+									LocalDateTime demandTimestamp = startDateTime.plusMinutes(5 * count);
 									// 代表一组 timestamp - value 的map
 									Map<LocalDateTime, Double> currData = new HashMap<>();
 									currData.put(demandTimestamp, value);
