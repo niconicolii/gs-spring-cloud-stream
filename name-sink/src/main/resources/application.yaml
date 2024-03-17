@@ -13,4 +13,4 @@ spring:
       password: 123456
       database: ttt
       port: 27017
-      host: 10.0.0.131
+      host: localhost
