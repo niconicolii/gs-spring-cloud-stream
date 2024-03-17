@@ -7,4 +7,4 @@ spring:
         bindings:
           supplyName-out-0: processorinput
       poller:
-        fixed-delay: 5000
+        fixed-delay: 15000
