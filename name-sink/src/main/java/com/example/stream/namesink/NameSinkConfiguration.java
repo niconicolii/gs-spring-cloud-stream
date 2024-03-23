@@ -24,14 +24,12 @@ public class NameSinkConfiguration {
     public Consumer<Message<Map<LocalDateTime, Double>>> nameSink() {
         return timeToValue -> {
             Map<LocalDateTime, Double> demandData = (Map<LocalDateTime, Double>) timeToValue.getPayload();
-//            System.out.println("Received map: " + demandData);
             for (LocalDateTime timestamp : demandData.keySet()) {
                 System.out.println("Received map, timestamp: " + timestamp +
                         ", value: " + demandData.get(timestamp));
                 Optional<DemandData> optional = repository.findDemandDataByTimestamp(timestamp);
                 if (repository.findDemandDataByTimestamp(timestamp).isEmpty()){
                     System.out.println("Didn't find any duplicate record");
-//                if (optional.isEmpty()) {
                     DemandData newDemandData = new DemandData(
                             timestamp,
                             demandData.get(timestamp)

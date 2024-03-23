@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.cglib.core.Local;
@@ -26,14 +27,16 @@ import static com.fasterxml.jackson.databind.type.LogicalType.Map;
 
 @Configuration
 public class NameProcessorConfiguration {
+//	@Autowired
+//	private NameProcessorService nameProcessorService;
+	@Autowired
+	private ProcessorRepository processorRepository;
 
 	@Bean
 	public Function<String, List<Message<Map<LocalDateTime, Double>>>> processXmlData() {
 		return xmlString -> {
 			// 储存本次收到的xml里的所有<Timestamp，demand>；用LinkedHashMap可以保留数据原本的排序
 			List<Message<Map<LocalDateTime, Double>>> messages = new ArrayList<>();
-//			Map<LocalDateTime, String> timeToString = new LinkedHashMap<>();
-//			System.out.println(xmlString);
 			try {
 				// Parse XML String using JAVA DOM
 				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -55,8 +58,12 @@ public class NameProcessorConfiguration {
 				LocalDateTime startDateTime = LocalDateTime.parse(startDate);
 				// Get all DataSet nodes
 				NodeList nList = document.getElementsByTagName("DataSet");
-//				System.out.println("============================");
 
+				LocalDateTime maxDateTime = LocalDateTime.MIN;
+				Optional<DemandData> optional = processorRepository.findTopByOrderByTimestampDesc();
+				if (optional.isPresent()) {
+					maxDateTime = optional.get().getTimestamp();
+				}
 				// 因为有3个DataSet所以需要loop
 				for (int temp = 0; temp < nList.getLength(); temp++) {
 					Node node = nList.item(temp);
@@ -64,7 +71,6 @@ public class NameProcessorConfiguration {
 						Element eElement = (Element) node;
 						// 只留Series=5_Minute的DataSet
 						if ("5_Minute".equals(eElement.getAttribute("Series"))) {
-//							System.out.println("Series : " + eElement.getAttribute("Series"));
 							NodeList dataNodes = eElement.getElementsByTagName("Data");
 							// 读取这个DataSet底下的所有Data
 							for (int count = 0; count < dataNodes.getLength(); count++) {
@@ -78,12 +84,15 @@ public class NameProcessorConfiguration {
 
 									Double value = Double.valueOf(demandValue);
 									LocalDateTime demandTimestamp = startDateTime.plusMinutes(5 * count);
-									// 代表一组 timestamp - value 的map
-									Map<LocalDateTime, Double> currData = new HashMap<>();
-									currData.put(demandTimestamp, value);
-									// 把map封装到 message里
-									Message<Map<LocalDateTime, Double>> message = MessageBuilder.withPayload(currData).build();
-									messages.add(message);
+									// duplication check
+									if (demandTimestamp.isAfter(maxDateTime)) {
+										// 代表一组 timestamp - value 的map
+										Map<LocalDateTime, Double> currData = new HashMap<>();
+										currData.put(demandTimestamp, value);
+										// 把map封装到 message里
+										Message<Map<LocalDateTime, Double>> message = MessageBuilder.withPayload(currData).build();
+										messages.add(message);
+									}
 								}
 							}
 						}
