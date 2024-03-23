@@ -23,8 +23,6 @@ public class NameProcessorService {
     private ProcessorRepository processorRepository;
 
     public LocalDateTime getMaxDateTime() {
-        processorRepository.findAll();
-
         LocalDateTime maxDateTime = LocalDateTime.MIN;
         Optional<DemandData> optional = processorRepository.findTopByOrderByTimestampDesc();
         if (optional.isPresent()) {
