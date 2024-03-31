@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="name-processor" />
+        <module name="ieso-bff" />
         <module name="name-source" />
         <module name="name-sink" />
       </profile>
@@ -14,6 +15,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="ieso-bff" options="-parameters" />
       <module name="name-processor" options="-parameters" />
       <module name="name-sink" options="-parameters" />
       <module name="name-source" options="-parameters" />

@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -27,8 +27,7 @@ import static com.fasterxml.jackson.databind.type.LogicalType.Map;
 
 @Configuration
 public class NameProcessorConfiguration {
-//	@Autowired
-//	private NameProcessorService nameProcessorService;
+
 	@Autowired
 	private ProcessorRepository processorRepository;
 
