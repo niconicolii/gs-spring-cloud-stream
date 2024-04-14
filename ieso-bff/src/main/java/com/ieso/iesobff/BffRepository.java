@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface BffRepository extends MongoRepository<DemandData, String> {
 
-    @Query(" { 'timestamp': { $gte: ?0, $lte: ?1 } } ")
+    @Query(" { 'timestamp': { $gt: ?0, $lte: ?1 } } ")
     List<DemandData> findByTimestampBetween(LocalDateTime startTime,
                                             LocalDateTime endTime);
 }
