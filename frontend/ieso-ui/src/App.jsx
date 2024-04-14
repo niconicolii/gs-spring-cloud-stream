@@ -1,11 +1,7 @@
 import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import axios from 'axios'
 import { DemandChart } from "./DemandChart"
-import { DateInput } from './DateInput'
-import { format } from 'date-fns'
 
 
 const api = axios.create({
