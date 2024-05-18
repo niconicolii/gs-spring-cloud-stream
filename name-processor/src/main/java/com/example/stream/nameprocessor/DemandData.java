@@ -1,26 +1,29 @@
-package com.example.stream.nameprocessor;
+package com.example.stream.namesink;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Data
 @Document
 public class DemandData {
     @Id
-    private String id;
+    private Integer id;
     @Indexed(unique = true)
-    private LocalDateTime timestamp;
+    private Timestamp timestamp;
 
-    public DemandData(LocalDateTime timestamp, double value) {
+    private double value;
+
+    public DemandData(Timestamp timestamp, double value) {
         this.timestamp = timestamp;
         this.value = value;
     }
-
-    private double value;
 
     public LocalDateTime getTimestamp() {
         return timestamp;
